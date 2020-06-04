@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "cc2020-tudelft-status-dashboard"
+s3_bucket = "leicmi-cloudcomp2020"
+s3_prefix = "cc2020-tudelft-status-dashboard"
+region = "eu-central-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
