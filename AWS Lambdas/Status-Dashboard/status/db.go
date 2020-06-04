@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -9,12 +11,12 @@ import (
 
 // Declare a new DynamoDB instance. Note that this is safe for concurrent
 // use.
-var db = dynamodb.New(session.New(), aws.NewConfig().WithRegion("eu-central-1"))
+var db = dynamodb.New(session.New())
 
 func getItem(isbn string) (*book, error) {
 	// Prepare the input for the query.
 	input := &dynamodb.GetItemInput{
-		TableName: aws.String("Books"),
+		TableName: aws.String(os.Getenv("DynamoDBTable")),
 		Key: map[string]*dynamodb.AttributeValue{
 			"ISBN": {
 				S: aws.String(isbn),
@@ -44,4 +46,25 @@ func getItem(isbn string) (*book, error) {
 	}
 
 	return bk, nil
+}
+
+// Add a book record to DynamoDB.
+func putItem(bk *book) error {
+	input := &dynamodb.PutItemInput{
+		TableName: aws.String(os.Getenv("DynamoDBTable")),
+		Item: map[string]*dynamodb.AttributeValue{
+			"ISBN": {
+				S: aws.String(bk.ISBN),
+			},
+			"Title": {
+				S: aws.String(bk.Title),
+			},
+			"Author": {
+				S: aws.String(bk.Author),
+			},
+		},
+	}
+
+	_, err := db.PutItem(input)
+	return err
 }

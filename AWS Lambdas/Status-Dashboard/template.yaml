@@ -6,35 +6,35 @@ Description: >
   Sample SAM Template
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
-Globals:
-  Function:
+Globals: 
+  Function: 
     Timeout: 5
 
-Resources:
-  StatusDashboardFunction:
+Resources: 
+  StatusDashboardFunction: 
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
+    Properties: 
       CodeUri: status/
       Handler: status
       Runtime: go1.x
       Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
-      Events:
-        CatchAll:
+      Events: 
+        CatchAll: 
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /state
-            Method: GET
+          Properties: 
+            Path: /books
+            Method: ANY
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-        Variables:
-          PARAM1: VALUE
-          BooksTableArn: !GetAtt DynamoDBTable.Arn
-      Policies:
-        - DynamoDBReadPolicy:
+        Variables: 
+          DynamoDBTable: !Ref DynamoDBTable
+      Policies: # More info: https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst and here: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html
+        - DynamoDBReadPolicy: 
             TableName: !Ref DynamoDBTable
-  DynamoDBTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: Books
+        - DynamoDBWritePolicy: 
+            TableName: !Ref DynamoDBTable
+  DynamoDBTable: 
+    Type: AWS::DynamoDB::Table # More info: https://docs.aws.amazon.com/de_de/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html
+    Properties: 
       AttributeDefinitions: 
         - AttributeName: ISBN
           AttributeType: S
@@ -45,16 +45,10 @@ Resources:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
 
-Outputs:
+Outputs: # Shown in terminal when `sam deploy` is invoked
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  StatusDashboardAPI:
+  StatusDashboardAPI: 
     Description: "API Gateway endpoint URL for Prod environment for our Status-Dashboard Function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/state/"
-  StatusDashboardFunction:
-    Description: "Lambda Function ARN"
-    Value: !GetAtt StatusDashboardFunction.Arn
-  StatusDashboardFunctionIamRole:
-    Description: "Implicit IAM Role created for Status-Dashboard function"
-    Value: !GetAtt StatusDashboardFunctionRole.Arn
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/"

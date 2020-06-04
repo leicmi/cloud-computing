@@ -1,20 +1,11 @@
 # Status-Dashboard
 
-This is a sample template for Status-Dashboard - Below is a brief explanation of what we have generated for you:
-
-```bash
-.
-├── Makefile                    <-- Make to automate build
-├── README.md                   <-- This instructions file
-├── hello-world                 <-- Source code for a lambda function
-│   ├── main.go                 <-- Lambda function code
-│   └── main_test.go            <-- Unit tests
-└── template.yaml
-```
+This example is currently a Book-Inventory instead of a Status-Dashboard.
+It is heavily based on <https://www.alexedwards.net/blog/serverless-api-with-go-and-aws-lambda> and should provide a good starting point for working with DynamoDB.
 
 ## Requirements
 
-* AWS CLI already configured with Administrator permission
+* AWS CLI already configured with Administrator permission (including `aws sam`)
 * [Docker installed](https://www.docker.com/community-edition)
 * [Golang](https://golang.org)
 
@@ -22,10 +13,11 @@ This is a sample template for Status-Dashboard - Below is a brief explanation of
 
 ### Installing dependencies
 
-In this example we use the built-in `go get` and the only dependency we need is AWS Lambda Go SDK:
+In this example we use the built-in `go get` and the only dependencie we need are AWS (Lambda) Go SDK:
 
 ```shell
 go get -u github.com/aws/aws-lambda-go/...
+go get github.com/aws/aws-sdk-go
 ```
 
 **NOTE:** As you change your application code as well as dependencies during development, you might want to research how to handle dependencies in Golang at scale.
@@ -40,6 +32,8 @@ You can issue the following command in a shell to build it:
 GOOS=linux GOARCH=amd64 go build -o hello-world/hello-world ./hello-world
 ```
 
+Alternatively you can use `make build` or `sam build`.
+
 **NOTE**: If you're not building the function on a Linux machine, you will need to specify the `GOOS` and `GOARCH` environment variables, this allows Golang to build your function for another system architecture and ensure compatibility.
 
 ### Local development
@@ -50,32 +44,17 @@ GOOS=linux GOARCH=amd64 go build -o hello-world/hello-world ./hello-world
 sam local start-api
 ```
 
-If the previous command ran successfully you should now be able to hit the following local endpoint to invoke your function `http://localhost:3000/hello`
+If the previous command ran successfully you should now be able to hit the following local endpoint to invoke your function `http://localhost:3000/books`
 
-**SAM CLI** is used to emulate both Lambda and API Gateway locally and uses our `template.yaml` to understand how to bootstrap this environment (runtime, where the source code is, etc.) - The following excerpt is what the CLI will read in order to initialize an API and its routes:
+**SAM CLI** is used to emulate both Lambda and API Gateway locally and uses our `template.yaml` to understand how to bootstrap this environment (runtime, where the source code is, etc.).
 
-```yaml
-...
-Events:
-    HelloWorld:
-        Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-        Properties:
-            Path: /hello
-            Method: get
-```
+**NOTE**: Using DynamoDB resources required extra fiddling with SAM Local. There are open issues on GitHub.
 
 ## Packaging and deployment
 
 AWS Lambda Golang runtime requires a flat folder with the executable generated on build step. SAM will use `CodeUri` property to know where to look up for the application:
 
-```yaml
-...
-    FirstFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: hello_world/
-            ...
-```
+Use `sam build` to build.
 
 To deploy your application for the first time, run the following in your shell:
 
@@ -95,11 +74,8 @@ You can find your API Gateway Endpoint URL in the output values displayed after 
 
 ### Testing
 
-We use `testing` package that is built-in in Golang and you can simply run the following command to run our tests:
+No testing anymore...
 
-```shell
-go test -v ./hello-world/
-```
 # Appendix
 
 ### Golang installation
