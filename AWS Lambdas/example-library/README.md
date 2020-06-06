@@ -2,7 +2,7 @@
 
 This example is heavily based on <https://www.alexedwards.net/blog/serverless-api-with-go-and-aws-lambda> and should provide a good starting point for working with DynamoDB.
 
-Usage:
+Usage: (don't forget to change the url to the one `sam deploy` provides after successfully executing)
 
 ```shell
 curl -i -H "Content-Type: application/json" -X POST \
