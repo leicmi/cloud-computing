@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  This is an AWS SAM (Serverless Application Model) template.
+  You can build all lambdas using `sam build` and deploy them using `sam deploy --guided`.
+
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals: 
+  Function: 
+    Timeout: 5
+
+Resources: 
+  ExampleBooksFunction: 
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties: 
+      CodeUri: example-library/
+      Handler: example-library
+      Runtime: go1.x
+      Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+      Events: 
+        CatchAll: 
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties: 
+            Path: /books
+            Method: ANY
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables: 
+          DynamoDBTable: !Ref ExampleLibraryTable
+      Policies: # More info: https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst and here: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html
+        - DynamoDBReadPolicy: 
+            TableName: !Ref ExampleLibraryTable
+        - DynamoDBWritePolicy: 
+            TableName: !Ref ExampleLibraryTable
+  ExampleLibraryTable: 
+    Type: AWS::DynamoDB::Table # More info: https://docs.aws.amazon.com/de_de/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html
+    Properties: 
+      AttributeDefinitions: 
+        - AttributeName: ISBN
+          AttributeType: S
+      KeySchema: 
+        - AttributeName: ISBN
+          KeyType: HASH
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 5 # please note that only 25 RCUs and 25WCUs are included in the AWS free tier (IIRC).
+        WriteCapacityUnits: 5
+
+Outputs: # Shown in terminal when `sam deploy` is invoked
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  StatusDashboardAPI: 
+    Description: "API Gateway endpoint URL for Prod environment for our Library Function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/"
