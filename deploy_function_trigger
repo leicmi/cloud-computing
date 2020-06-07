@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#TODO
+#create custom function
+#make deplayment bucket name random (and test availability)
+#link the bucket arn for uploads
+#cleanup
+
+bucketname=$1
+region=$2	#us-east-2
+
+#init the function
+#sam init 2 <github folder> 
+
+
+#create bucket
+
+aws s3 mb s3://$bucketname
+
+sam package \
+    --template-file template.yaml \
+    --output-template-file packaged.yaml \
+    --s3-bucket $bucketname
+
+sam deploy \
+    --template-file packaged.yaml \
+    --stack-name aws-sam-ocr \
+    --capabilities CAPABILITY_IAM \
+    --region $region
+
+
