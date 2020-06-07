@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/leicmi/cloud-computing/util"
 	"github.com/sirupsen/logrus"
 )
 
@@ -35,7 +36,7 @@ func upload(sess *session.Session, filename string, bucket string) (string, erro
 		Body:   f,
 	})
 	if err != nil {
-		return "", fmt.Errorf("failed to upload file, %v", err)
+		return "", util.FormatAWSError(err)
 	}
 
 	return jobName, nil
