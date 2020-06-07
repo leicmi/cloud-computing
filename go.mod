@@ -3,6 +3,7 @@ module github.com/leicmi/cloud-computing
 go 1.13
 
 require (
+	github.com/aws/aws-lambda-go v1.17.0 // indirect
 	github.com/aws/aws-sdk-go v1.31.7
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-openapi/strfmt v0.19.5 // indirect
