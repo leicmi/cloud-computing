@@ -3,9 +3,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -59,21 +56,6 @@ func readConfig() {
 	}
 
 	apiURL = viper.GetString("apiurl")
-}
-
-// Starts a new AWS session with credentials
-func awsSession() *session.Session {
-	readConfig()
-
-	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String("eu-central-1"),
-		Credentials: credentials.NewStaticCredentials(accessKeyID, secretKey, ""),
-	})
-	if err != nil {
-		panic(fmt.Errorf("Fatal error connecting to AWS: %s\n", err))
-	}
-
-	return sess
 }
 
 func Execute() error {
