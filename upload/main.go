@@ -3,10 +3,13 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/leicmi/cloud-computing/util"
 
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -19,29 +22,39 @@ func main() {
 	lambda.Start(HandleRequest)
 }
 
-func HandleRequest(ctx context.Context, job util.Job) (string, error) {
+func response(body string, statusCode int) events.APIGatewayProxyResponse {
+	return events.APIGatewayProxyResponse{Body: body, StatusCode: statusCode}
+}
+
+func HandleRequest(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	sess, err := session.NewSession()
 	if err != nil {
-		return "", errors.Wrap(err, "unable to create new session")
+		return response("unable to create new session", http.StatusInternalServerError), errors.Wrap(err, "unable to create new session")
+	}
+
+	job := &util.Job{}
+	err = json.Unmarshal([]byte(req.Body), job)
+	if err != nil {
+		return response("unable to unmarshal body", http.StatusBadRequest), errors.Wrap(err, "unable to unmarshal body")
 	}
 
 	// Save file in S3
-	jobName, err := upload(sess, job)
+	err = upload(sess, job)
 	if err != nil {
-		return "", errors.Wrap(err, "unable to upload job")
+		return response("unable to upload to S3", http.StatusInternalServerError), errors.Wrap(err, "unable to upload job")
 	}
 
 	// Add to dynamodb
 	err = addToDB(sess, job.Name)
 	if err != nil {
-		return "", errors.Wrap(err, "unable to queue job in database")
+		return response("unable to add job to db", http.StatusInternalServerError), errors.Wrap(err, "unable to queue job in database")
 	}
 
-	return fmt.Sprintf("job uploaded as \"%s\"", jobName), nil
+	return response(job.Name, http.StatusOK), nil
 }
 
-func upload(sess *session.Session, job util.Job) (string, error) {
-	jobName := fmt.Sprintf("pending_%s", job.Name)
+func upload(sess *session.Session, job *util.Job) error {
+	jobName := fmt.Sprintf("pending/%s", job.Name)
 
 	uploader := s3manager.NewUploader(sess)
 
@@ -52,10 +65,10 @@ func upload(sess *session.Session, job util.Job) (string, error) {
 		Body:   bytes.NewReader(job.Data),
 	})
 	if err != nil {
-		return "", fmt.Errorf("failed to upload file, %v", err)
+		return fmt.Errorf("failed to upload file, %v", err)
 	}
 
-	return jobName, nil
+	return nil
 }
 
 func addToDB(sess *session.Session, jobName string) error {

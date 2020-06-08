@@ -1,43 +1,61 @@
 package cmd
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
-	"os"
+	"io/ioutil"
+	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/leicmi/cloud-computing/util"
+	"github.com/pkg/errors"
+
 	"github.com/sirupsen/logrus"
 )
 
-func start(sess *session.Session, filename string, bucket string) {
-	jobName, err := upload(sess, filename, bucket)
+func start(url string, filename string) {
+	f, err := ioutil.ReadFile(filename)
 	if err != nil {
-		logrus.WithError(err).Fatal("unable to upload file")
+		logrus.WithError(err).Errorf("failed to read file %q", filename)
+		return
 	}
 
-	fmt.Printf("Queued job with name: %s\n", jobName)
+	result, err := invokeUpload(url, filename, f)
+	if err != nil {
+		logrus.WithError(err).Errorf("unable to upload file")
+		return
+	}
+
+	fmt.Printf("Queued job %q\n", result)
 }
 
-func upload(sess *session.Session, filename string, bucket string) (string, error) {
-	f, err := os.Open(filename)
-	if err != nil {
-		return "", fmt.Errorf("failed to open file %q, %v", filename, err)
-	}
-	jobName := fmt.Sprintf("pending_%s", filename)
+// func invokeUpload(sess *session.Session, filename string, data []byte) (*lambda.InvokeOutput, error) {
+func invokeUpload(url string, filename string, data []byte) (string, error) {
 
-	uploader := s3manager.NewUploader(sess)
-
-	// Upload the file to S3.
-	_, err = uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String(jobName),
-		Body:   f,
-	})
-	if err != nil {
-		return "", util.FormatAWSError(err)
+	job := &util.Job{
+		Name: filename,
+		Data: data,
 	}
 
-	return jobName, nil
+	jobBody, err := json.Marshal(job)
+	if err != nil {
+		return "", errors.Wrap(err, "unable to marshal job data")
+	}
+
+	resp, err := http.Post(fmt.Sprintf("%s/default/upload", url), "application/json", bytes.NewReader(jobBody))
+	if err != nil {
+		return "", errors.Wrap(err, "unable to upload job")
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", errors.Wrap(err, "unable to read response body")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		logrus.WithField("responseBody", string(body)).WithField("requestBody", string(jobBody)).Info("response was")
+		return "", fmt.Errorf("statuscode was not %d, was %d", http.StatusOK, resp.StatusCode)
+	}
+
+	return string(body), nil
 }
