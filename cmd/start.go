@@ -31,8 +31,7 @@ func start(url string, filename string) {
 
 // func invokeUpload(sess *session.Session, filename string, data []byte) (*lambda.InvokeOutput, error) {
 func invokeUpload(url string, filename string, data []byte) (string, error) {
-
-	job := &util.Job{
+	job := &util.JobData{
 		Name: filename,
 		Data: data,
 	}

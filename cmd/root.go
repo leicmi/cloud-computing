@@ -59,6 +59,8 @@ func readConfig() {
 }
 
 func Execute() error {
+	readConfig()
+
 	rootCmd.AddCommand(startCmd, listCmd, pendingCmd)
 	return rootCmd.Execute()
 }

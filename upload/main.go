@@ -32,7 +32,7 @@ func HandleRequest(ctx context.Context, req events.APIGatewayProxyRequest) (even
 		return response("unable to create new session", http.StatusInternalServerError), errors.Wrap(err, "unable to create new session")
 	}
 
-	job := &util.Job{}
+	job := &util.JobData{}
 	err = json.Unmarshal([]byte(req.Body), job)
 	if err != nil {
 		return response("unable to unmarshal body", http.StatusBadRequest), errors.Wrap(err, "unable to unmarshal body")
@@ -53,7 +53,7 @@ func HandleRequest(ctx context.Context, req events.APIGatewayProxyRequest) (even
 	return response(job.Name, http.StatusOK), nil
 }
 
-func upload(sess *session.Session, job *util.Job) error {
+func upload(sess *session.Session, job *util.JobData) error {
 	jobName := fmt.Sprintf("pending/%s", job.Name)
 
 	uploader := s3manager.NewUploader(sess)
@@ -78,19 +78,17 @@ func addToDB(sess *session.Session, jobName string) error {
 			"id": {
 				S: aws.String(jobName),
 			},
-			"status": {
+			"jobStatus": {
 				S: aws.String(util.JOB_STATUS_PENDING),
 			},
 		},
 		TableName: aws.String("jobs"),
 	}
 
-	result, err := svc.PutItem(input)
+	_, err := svc.PutItem(input)
 	if err != nil {
 		return util.FormatAWSError(err)
 	}
-
-	fmt.Println(result)
 
 	return nil
 }
