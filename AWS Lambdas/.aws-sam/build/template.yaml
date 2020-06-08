@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'This is an AWS SAM (Serverless Application Model) template. You can
+  build all lambdas using `sam build` and deploy them using `sam deploy --guided`.
+
+  '
+Globals:
+  Function:
+    Timeout: 5
+Resources:
+  ExampleBooksFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ExampleBooksFunction
+      Handler: example-library
+      Runtime: go1.x
+      Tracing: Active
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /books
+            Method: ANY
+      Environment:
+        Variables:
+          DynamoDBTable:
+            Ref: ExampleLibraryTable
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: ExampleLibraryTable
+      - DynamoDBWritePolicy:
+          TableName:
+            Ref: ExampleLibraryTable
+  ExampleLibraryTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: ISBN
+        AttributeType: S
+      KeySchema:
+      - AttributeName: ISBN
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+Outputs:
+  StatusDashboardAPI:
+    Description: API Gateway endpoint URL for Prod environment for our Library Function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/
