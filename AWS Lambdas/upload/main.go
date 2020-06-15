@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -60,7 +61,7 @@ func upload(sess *session.Session, job *util.JobData) error {
 
 	// Upload the file to S3.
 	_, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String("lamq"),
+		Bucket: aws.String(os.Getenv("Bucket")),
 		Key:    aws.String(jobName),
 		Body:   bytes.NewReader(job.Data),
 	})
@@ -82,7 +83,7 @@ func addToDB(sess *session.Session, jobName string) error {
 				S: aws.String(util.JOB_STATUS_PENDING),
 			},
 		},
-		TableName: aws.String("jobs"),
+		TableName: aws.String(os.Getenv("DynamoDBTable")),
 	}
 
 	_, err := svc.PutItem(input)

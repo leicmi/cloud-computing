@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -51,7 +52,7 @@ func scanDB(sess *session.Session) (*dynamodb.ScanOutput, error) {
 	svc := dynamodb.New(sess)
 	query := &dynamodb.ScanInput{
 		ProjectionExpression: aws.String("id, jobStatus"),
-		TableName:            aws.String("jobs"),
+		TableName:            aws.String(os.Getenv("DynamoDBTable")),
 	}
 
 	result, err := svc.Scan(query)
