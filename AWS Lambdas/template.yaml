@@ -121,9 +121,8 @@ Resources:
         WriteCapacityUnits: 5
 
 Outputs: # Shown in terminal when `sam deploy` is invoked
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  StatusDashboardAPI: 
-    Description: "API Gateway endpoint URL for Prod environment for our Library Function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/"
+  API: 
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
