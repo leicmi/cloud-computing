@@ -38,6 +38,11 @@ func ListJobs(url string) ([]Job, error) {
 		return nil, errors.Wrap(err, "unable to read response body")
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		logrus.WithField("responseBody", string(body)).Info("response was")
+		return nil, fmt.Errorf("statusCode was not OK, was: %d", resp.StatusCode)
+	}
+
 	jobs := []Job{}
 	err = json.Unmarshal(body, &jobs)
 	if err != nil {
@@ -45,7 +50,7 @@ func ListJobs(url string) ([]Job, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		logrus.WithField("responseBody", string(body)).Info("response was")
+		logrus.WithField("responseBody", string(body)).WithField("status", resp.StatusCode).Error("response was not OK")
 		return nil, fmt.Errorf("statuscode was not %d, was %d", http.StatusOK, resp.StatusCode)
 	}
 
@@ -70,6 +75,11 @@ func QueryJobs(url string, status string) ([]Job, error) {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to read response body")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		logrus.WithField("responseBody", string(body)).WithField("status", resp.StatusCode).Error("response was not OK")
+		return nil, fmt.Errorf("statusCode was not OK, was: %d", resp.StatusCode)
 	}
 
 	jobs := []Job{}

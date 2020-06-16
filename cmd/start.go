@@ -52,7 +52,7 @@ func invokeUpload(url string, filename string, data []byte) (string, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		logrus.WithField("responseBody", string(body)).WithField("requestBody", string(jobBody)).Info("response was")
+		logrus.WithField("responseBody", string(body)).WithField("requestBody", string(jobBody)).WithField("status", resp.StatusCode).Error("response was not OK")
 		return "", fmt.Errorf("statuscode was not %d, was %d", http.StatusOK, resp.StatusCode)
 	}
 
