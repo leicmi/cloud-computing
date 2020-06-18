@@ -4,13 +4,10 @@ STACK_NAME ?= imagemagick-layer-example
 IMAGE_MAGICK_STACK_NAME ?= imagemagick-layer
 
 IMAGEMAGICK_LAYER ?=$(shell aws cloudformation describe-stacks --stack-name $(IMAGE_MAGICK_STACK_NAME) --query Stacks[].Outputs[].OutputValue --output text)
-SOURCES=$(shell find ImageMagick/)
+SOURCES=$(shell find ImageMagickSrc/)
 
 build:
 	sam build
-
-deploy:
-	sam deploy -g
 
 output.yaml: template.yaml $(SOURCES)
 	mkdir -p build
@@ -19,8 +16,7 @@ output.yaml: template.yaml $(SOURCES)
 deploy: output.yaml
 	aws cloudformation deploy --template-file $< --stack-name $(STACK_NAME) --capabilities CAPABILITY_IAM 
 	aws cloudformation describe-stacks --stack-name $(STACK_NAME) --query Stacks[].Outputs --output table
-
-
+	sam deploy -g
 
 clean:
 	rm -rf .aws-sam/build
