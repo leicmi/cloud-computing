@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -43,5 +44,14 @@ func stats(accesskeyid string, secretkey string, logGroupName string) {
 	if err != nil {
 		log.WithField("err", err).Fatal("error fetching insights query result")
 	}
-	log.Info(resp.String())
+	//log.Info(resp.String())
+	fmt.Println("duration, billedDuration, memorySize, maxMemoryUsed")
+	for _, r := range resp.Results {
+		var m map[string]string
+		m = make(map[string]string)
+		for _, tuple := range r {
+			m[*tuple.Field] = *tuple.Value
+		}
+		fmt.Printf("%s, %s, %s, %s\n", m["@duration"], m["@billedDuration"], m["@memorySize"], m["@maxMemoryUsed"])
+	}
 }
