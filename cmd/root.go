@@ -8,7 +8,10 @@ import (
 )
 
 var (
-	apiURL string
+	apiURL       string
+	accesskeyid  string
+	secretkey    string
+	logGroupName string
 
 	rootCmd = &cobra.Command{
 		Use:   "lamq",
@@ -39,6 +42,14 @@ var (
 			list(apiURL)
 		},
 	}
+
+	statsCmd = &cobra.Command{
+		Use:   "stats",
+		Short: "Get stats for all converts",
+		Run: func(cmd *cobra.Command, args []string) {
+			stats(accesskeyid, secretkey, logGroupName)
+		},
+	}
 )
 
 // Reads config.yml and extracts credentials
@@ -56,11 +67,14 @@ func readConfig() {
 	}
 
 	apiURL = viper.GetString("apiurl")
+	accesskeyid = viper.GetString("accesskeyid")
+	secretkey = viper.GetString("secretkey")
+	logGroupName = viper.GetString("logGroupName")
 }
 
 func Execute() error {
 	readConfig()
 
-	rootCmd.AddCommand(startCmd, listCmd, pendingCmd)
+	rootCmd.AddCommand(startCmd, listCmd, pendingCmd, statsCmd)
 	return rootCmd.Execute()
 }
