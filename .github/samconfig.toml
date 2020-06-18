@@ -1,0 +1,8 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "com-github-leicmi-cloud-computing"
+s3_bucket = "com-github-leicmi-cloud-computing"
+region = "eu-central-1"
+capabilities = "CAPABILITY_IAM"
