@@ -16,6 +16,27 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: com-github-leicmi-cloud-computing-lamq
+  LamqResizedBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: com-github-leicmi-cloud-computing-lamq-resized
+  ConvertFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: convert/
+      Handler: convert
+      Runtime: go1.x
+      Events:
+        CreateThumbnailEvent:
+          Type: S3
+          Properties:
+            Bucket: !Ref LamqBucket
+            Events: s3:ObjectCreated:*
+      Policies:
+        - S3ReadPolicy: 
+            BucketName: com-github-leicmi-cloud-computing-lamq
+        - S3WritePolicy: 
+            BucketName: !Ref LamqResizedBucket
   ListFunction: 
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties: 
