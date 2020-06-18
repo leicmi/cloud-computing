@@ -9,8 +9,81 @@ Description: >
 Globals: 
   Function: 
     Timeout: 5
+    Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
 
 Resources: 
+  LamqBucket:
+    Type: AWS::S3::Bucket
+  ListFunction: 
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties: 
+      CodeUri: list/
+      Handler: list
+      Runtime: go1.x
+      Events: 
+        CatchAll: 
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties: 
+            Path: /default/list
+            Method: GET
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables: 
+          DynamoDBTable: !Ref JobTable
+      Policies: # More info: https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst and here: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html
+        - DynamoDBReadPolicy: 
+            TableName: !Ref JobTable
+  PendingFunction: 
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties: 
+      CodeUri: pending/
+      Handler: pending
+      Runtime: go1.x
+      Events: 
+        CatchAll: 
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties: 
+            Path: /default/pending
+            Method: POST
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables: 
+          DynamoDBTable: !Ref JobTable
+      Policies: # More info: https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst and here: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html
+        - DynamoDBReadPolicy: 
+            TableName: !Ref JobTable
+  UploadFunction: 
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties: 
+      CodeUri: upload/
+      Handler: upload
+      Runtime: go1.x
+      Events: 
+        CatchAll: 
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties: 
+            Path: /default/upload
+            Method: POST
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables: 
+          DynamoDBTable: !Ref JobTable
+          Bucket: !Ref LamqBucket
+      Policies: # More info: https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst and here: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html
+        - DynamoDBWritePolicy: 
+            TableName: !Ref JobTable
+        - S3WritePolicy: 
+            BucketName: !Ref LamqBucket
+  JobTable: 
+    Type: AWS::DynamoDB::Table # More info: https://docs.aws.amazon.com/de_de/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html
+    Properties: 
+      AttributeDefinitions: 
+        - AttributeName: id
+          AttributeType: S
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 5 # please note that only 25 RCUs and 25WCUs are included in the AWS free tier (IIRC).
+        WriteCapacityUnits: 5
+
   ExampleBooksFunction: 
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties: 
@@ -46,9 +119,8 @@ Resources:
         WriteCapacityUnits: 5
 
 Outputs: # Shown in terminal when `sam deploy` is invoked
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  StatusDashboardAPI: 
-    Description: "API Gateway endpoint URL for Prod environment for our Library Function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/"
+  API: 
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"

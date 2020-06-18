@@ -3,17 +3,12 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
-	accessKeyID string
-	secretKey   string
-	bucket      string
+	apiURL string
 
 	rootCmd = &cobra.Command{
 		Use:   "lamq",
@@ -25,7 +20,7 @@ var (
 		Short: "Start processing the file",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			start(awsSession(), args[0], bucket)
+			start(apiURL, args[0])
 		},
 	}
 
@@ -33,7 +28,7 @@ var (
 		Use:   "pending",
 		Short: "Lists all the pending jobs",
 		Run: func(cmd *cobra.Command, args []string) {
-			pending(awsSession(), bucket)
+			pending(apiURL)
 		},
 	}
 
@@ -41,7 +36,7 @@ var (
 		Use:   "list",
 		Short: "Lists all jobs",
 		Run: func(cmd *cobra.Command, args []string) {
-			list(awsSession(), bucket)
+			list(apiURL)
 		},
 	}
 )
@@ -60,27 +55,12 @@ func readConfig() {
 		}
 	}
 
-	accessKeyID = viper.GetString("accesskeyid")
-	secretKey = viper.GetString("secretkey")
-	bucket = viper.GetString("bucket")
-}
-
-// Starts a new AWS session with credentials
-func awsSession() *session.Session {
-	readConfig()
-
-	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String("eu-central-1"),
-		Credentials: credentials.NewStaticCredentials(accessKeyID, secretKey, ""),
-	})
-	if err != nil {
-		panic(fmt.Errorf("Fatal error connecting to AWS: %s\n", err))
-	}
-
-	return sess
+	apiURL = viper.GetString("apiurl")
 }
 
 func Execute() error {
+	readConfig()
+
 	rootCmd.AddCommand(startCmd, listCmd, pendingCmd)
 	return rootCmd.Execute()
 }
