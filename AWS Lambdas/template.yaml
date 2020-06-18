@@ -32,11 +32,16 @@ Resources:
           Properties:
             Bucket: !Ref LamqBucket
             Events: s3:ObjectCreated:*
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables: 
+          DynamoDBTable: !Ref JobTable
       Policies:
         - S3ReadPolicy: 
             BucketName: com-github-leicmi-cloud-computing-lamq # workaround to avoid circular dependency https://github.com/awslabs/serverless-application-model/issues/138 and https://github.com/awslabs/serverless-application-model/issues/1109#issuecomment-526302409
         - S3WritePolicy: 
             BucketName: !Ref LamqResizedBucket
+        - DynamoDBWritePolicy: 
+            TableName: !Ref JobTable
   ListFunction: 
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties: 
