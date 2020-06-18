@@ -5,4 +5,4 @@ version = 0.1
 stack_name = "com-github-leicmi-cloud-computing"
 s3_bucket = "com-github-leicmi-cloud-computing"
 region = "eu-central-1"
-capabilities = "CAPABILITY_IAM"
+capabilities = "CAPABILITY_IAM  CAPABILITY_AUTO_EXPAND"
