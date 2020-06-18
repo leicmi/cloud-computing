@@ -41,7 +41,7 @@ Resources:
       Timeout: 180
       MemorySize: 1024
       Runtime: nodejs10.x
-      CodeUri: ImageMagickSrc
+      CodeUri: ImageMagickSrc/
       Layers:
           - !GetAtt ImageMagick.Outputs.LayerVersion
       Policies:
