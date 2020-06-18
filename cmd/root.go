@@ -9,8 +9,6 @@ import (
 
 var (
 	apiURL       string
-	accesskeyid  string
-	secretkey    string
 	logGroupName string
 
 	rootCmd = &cobra.Command{
@@ -45,9 +43,9 @@ var (
 
 	statsCmd = &cobra.Command{
 		Use:   "stats",
-		Short: "Get stats for all converts",
+		Short: "Shows the metrics for the convert lambda calls. Please note the delay of around 1-5 minutes.",
 		Run: func(cmd *cobra.Command, args []string) {
-			stats(accesskeyid, secretkey, logGroupName)
+			stats(logGroupName)
 		},
 	}
 )
@@ -67,8 +65,6 @@ func readConfig() {
 	}
 
 	apiURL = viper.GetString("apiurl")
-	accesskeyid = viper.GetString("accesskeyid")
-	secretkey = viper.GetString("secretkey")
 	logGroupName = viper.GetString("logGroupName")
 }
 
