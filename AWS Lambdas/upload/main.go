@@ -1,12 +1,12 @@
-package main
+package upload
 
 import (
-	"os"
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/leicmi/cloud-computing/util"
 
