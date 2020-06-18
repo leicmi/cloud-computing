@@ -3,8 +3,6 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   This is an AWS SAM (Serverless Application Model) template.
   You can build all lambdas using `sam build` and deploy them using `sam deploy --guided`.
-
-
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals: 
   Function: 
@@ -43,7 +41,7 @@ Resources:
       Timeout: 180
       MemorySize: 1024
       Runtime: nodejs10.x
-      CodeUri: src
+      CodeUri: ImageMagickSrc
       Layers:
           - !GetAtt ImageMagick.Outputs.LayerVersion
       Policies:
@@ -174,7 +172,7 @@ Outputs: # Shown in terminal when `sam deploy` is invoked
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
   LamqBucket:
      Description: "Upload S3 bucket"
-     Value: !Ref UploadBucket
+     Value: !Ref LamqBucket
   ResultsBucket:
      Description: "Results S3 bucket"
      Value: !Ref ResultsBucket
