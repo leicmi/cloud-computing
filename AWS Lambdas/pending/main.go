@@ -1,10 +1,10 @@
-package pending
+package main
 
 import (
+	"os"
 	"context"
 	"encoding/json"
 	"net/http"
-	"os"
 
 	"github.com/leicmi/cloud-computing/util"
 

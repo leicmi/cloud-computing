@@ -1,4 +1,4 @@
-package examplelibrary
+package main
 
 import (
 	"os"

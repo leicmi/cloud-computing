@@ -1,4 +1,5 @@
-package convert
+// main.go
+package main
 
 import (
 	"context"
