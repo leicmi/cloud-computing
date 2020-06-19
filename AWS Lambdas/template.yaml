@@ -24,11 +24,11 @@ Resources:
   LamqBucket:
     Type: AWS::S3::Bucket
     Properties:
-      LifecycleConfiguration:
+    LifecycleConfiguration:
         Rules:
-          Id: AutoDeletion
-          Status: 'Enabled'
-          ExpirationInDays: 1
+          - Id: DeleteContentAfter1Day
+            Status: 'Enabled'
+            ExpirationInDays: 1
       
   ResultsBucket:
     Type: AWS::S3::Bucket
