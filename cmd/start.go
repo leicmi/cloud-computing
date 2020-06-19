@@ -41,7 +41,7 @@ func invokeUpload(url string, filename string, data []byte) (string, error) {
 		return "", errors.Wrap(err, "unable to marshal job data")
 	}
 
-	resp, err := http.Post(fmt.Sprintf("%s/default/upload", url), "application/json", bytes.NewReader(jobBody))
+	resp, err := http.Post(fmt.Sprintf("%s/upload", url), "application/json", bytes.NewReader(jobBody))
 	if err != nil {
 		return "", errors.Wrap(err, "unable to upload job")
 	}
