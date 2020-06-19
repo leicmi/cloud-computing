@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## simple latency
+## simple latency, memory varied (same as test1)
 
 BUCKET="leicmi-cloud-computing-lamqbucket-1ulbttrj6irl3"
 

@@ -43,7 +43,17 @@ exports.handler = function (eventObject, context) {
 		[inputFile, '-resize', `${THUMB_WIDTH}x`, outputFile],
 		{env: process.env, cwd: workdir}
 	))
-	.then(() => s3Util.uploadFileToS3(OUTPUT_BUCKET, resultKey, outputFile, MIME_TYPE));
+	.then(() => childProcessPromise.spawn(
+		'rm',
+		[inputFile],
+		{cwd: workdir}
+	))
+	.then(() => s3Util.uploadFileToS3(OUTPUT_BUCKET, resultKey, outputFile, MIME_TYPE))
+	.then(() => childProcessPromise.spawn(
+		'rm',
+		[outputFile],
+		{cwd: workdir}
+	));
 
     // Creates a new item, or replaces an old item with a new item
 	// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#put-property
