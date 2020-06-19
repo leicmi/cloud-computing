@@ -23,10 +23,22 @@ Parameters:
 Resources: 
   LamqBucket:
     Type: AWS::S3::Bucket
-
+    Properties:
+      LifecycleConfiguration:
+          Rules:
+            - Id: DeleteContentAfter1Day
+              Status: 'Enabled'
+              ExpirationInDays: 1
+      
   ResultsBucket:
     Type: AWS::S3::Bucket
-
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteContentAfter1Day
+            Status: 'Enabled'
+            ExpirationInDays: 1
+    
   ImageMagick:
     Type: AWS::Serverless::Application
     Properties:
