@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	apiURL string
+	apiURL       string
+	logGroupName string
 
 	rootCmd = &cobra.Command{
 		Use:   "lamq",
@@ -39,6 +40,14 @@ var (
 			list(apiURL)
 		},
 	}
+
+	statsCmd = &cobra.Command{
+		Use:   "stats",
+		Short: "Shows the metrics for the convert lambda calls. Please note the delay of around 1-5 minutes.",
+		Run: func(cmd *cobra.Command, args []string) {
+			stats(logGroupName)
+		},
+	}
 )
 
 // Reads config.yml and extracts credentials
@@ -56,11 +65,12 @@ func readConfig() {
 	}
 
 	apiURL = viper.GetString("apiurl")
+	logGroupName = viper.GetString("logGroupName")
 }
 
 func Execute() error {
 	readConfig()
 
-	rootCmd.AddCommand(startCmd, listCmd, pendingCmd)
+	rootCmd.AddCommand(startCmd, listCmd, pendingCmd, statsCmd)
 	return rootCmd.Execute()
 }

@@ -137,8 +137,11 @@ Outputs: # Shown in terminal when `sam deploy` is invoked
     Description: "API Gateway endpoint URL"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
   LamqBucket:
-     Description: "Upload S3 bucket"
-     Value: !Ref LamqBucket
+    Description: "Upload S3 bucket"
+    Value: !Ref LamqBucket
   ResultsBucket:
-     Description: "Results S3 bucket"
-     Value: !Ref ResultsBucket
+    Description: "Results S3 bucket"
+    Value: !Ref ResultsBucket
+  ConvertFileFunctionLogGroupName:
+    Description: "LogGroupName of the ConvertFileFunction. Put this as the value for *logGroupName* in LogGroupName of the ConvertFileFunction. Prefix it with '/aws/lambda/' and put this as the value for *logGroupName* in config.yml"
+    Value: !Ref ConvertFileFunction
