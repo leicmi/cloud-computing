@@ -45,6 +45,26 @@ Resources:
       Location:
         ApplicationId: arn:aws:serverlessrepo:us-east-1:145266761615:applications/image-magick-lambda-layer
         SemanticVersion: 1.0.0
+  TriggerFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: trigger/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Timeout: 180
+      MemorySize: 1024
+      Policies:
+      - S3CrudPolicy:
+          BucketName: !Sub "${AWS::StackName}-*"
+      Environment:
+        Variables:
+          LamqBucket: !Ref LamqBucket
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /trigger
+            Method: get
 
   ConvertFileFunction:
     Type: AWS::Serverless::Function
