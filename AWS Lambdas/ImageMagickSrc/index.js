@@ -26,8 +26,10 @@ exports.handler = function (eventObject, context) {
 		outputFile = path.join(workdir, 'converted-' + id + EXTENSION);
 
     // Creates a new item, or replaces an old item with a new item
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#put-property
-	var params = {TableName : tableName, Item: { id : key, jobStatus: "CONVERTING" }};
+	// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#put-property
+	var eventTime = Date.parse(eventRecord.eventTime)
+	var startTime = Date.now()
+	var params = {TableName : tableName, Item: { id : key, jobStatus: "CONVERTING", eventTime: eventTime, startTime: startTime}};
 	docClient.put(params, function(err, data) {
 		if (err) console.log(err);
 		//else console.log(data);
@@ -35,7 +37,7 @@ exports.handler = function (eventObject, context) {
 
 	console.log('converting', inputBucket, key, 'using', inputFile);
 
-	result = s3Util.downloadFileFromS3(inputBucket, key, inputFile)
+	var result = s3Util.downloadFileFromS3(inputBucket, key, inputFile)
 	.then(() => childProcessPromise.spawn(
 		'/opt/bin/convert',
 		[inputFile, '-resize', `${THUMB_WIDTH}x`, outputFile],
@@ -44,9 +46,10 @@ exports.handler = function (eventObject, context) {
 	.then(() => s3Util.uploadFileToS3(OUTPUT_BUCKET, resultKey, outputFile, MIME_TYPE));
 
     // Creates a new item, or replaces an old item with a new item
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#put-property
-	var params = {TableName : tableName, Item: { id : key, jobStatus: "FINISHED" }};
-	docClient.put(params, function(err, data) {
+	// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#put-property
+	var endTime = Date.now()
+	var params2 = {TableName : tableName, Item: { id : key, jobStatus: "FINISHED", eventTime: eventTime, startTime: startTime, endTime: endTime}};
+	docClient.put(params2, function(err, data) {
 		if (err) console.log(err);
 		//else console.log(data);
 	  });
