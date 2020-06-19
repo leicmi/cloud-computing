@@ -9,6 +9,9 @@ lamq:
 deploy:
 	$(MAKE) -C "AWS Lambdas" deploy
 
+fastdeploy:
+	$(MAKE) -C "AWS Lambdas" fastdeploy
+
 clean:
 	rm -rf lamq
 	$(MAKE) -C "AWS Lambdas" clean

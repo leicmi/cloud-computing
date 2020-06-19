@@ -141,9 +141,7 @@ Resources:
       KeySchema: 
         - AttributeName: id
           KeyType: HASH
-      ProvisionedThroughput: 
-        ReadCapacityUnits: 5 # please note that only 25 RCUs and 25WCUs are included in the AWS free tier (IIRC).
-        WriteCapacityUnits: 5
+      BillingMode: 'PAY_PER_REQUEST'
 
 Outputs: # Shown in terminal when `sam deploy` is invoked
   # Find out more about other implicit resources you can reference within SAM
