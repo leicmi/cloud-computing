@@ -1,2 +1,2 @@
 apiurl: 'https://3cx9sdmyld.execute-api.eu-central-1.amazonaws.com/Prod'
-logGroupName: "/aws/lambda/com-github-leicmi-cloud-computing-ConvertFunction-THKUPVCJIEO3"
+logGroupName: "/aws/lambda/com-github-leicmi-cloud-comput-ConvertFileFunction-1T5XNHJ37XTZ1"
