@@ -9,7 +9,7 @@ aws s3 cp ./image.png s3://$BUCKET/image.png
 sleep 10
 
 #while true
-for i in $(seq 1 100)
+for i in $(seq 1 1000)
 do
-    aws s3 cp s3://$BUCKET/image.png s3://$BUCKET/image1-$i.png &
+    aws s3 cp s3://$BUCKET/image.png s3://$BUCKET/image4-$i.png &
 done

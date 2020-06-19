@@ -51,7 +51,7 @@ Resources:
     Properties:
       Handler: index.handler
       Timeout: 180
-      MemorySize: 320
+      MemorySize: 1024
       Runtime: nodejs10.x
       CodeUri: ImageMagickSrc/
       Layers:
