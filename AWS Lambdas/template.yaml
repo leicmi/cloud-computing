@@ -23,23 +23,15 @@ Parameters:
 Resources: 
   LamqBucket:
     Type: AWS::S3::Bucket
-   Properties:
-    LifecycleConfiguration:
-      Rules:
-        - Id: AutoDeletion
-        Prefix: ''
-        Status: 'Enabled'
-        ExpirationInDays: 1
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          Id: AutoDeletion
+          Status: 'Enabled'
+          ExpirationInDays: 1
       
   ResultsBucket:
     Type: AWS::S3::Bucket
-   Properties:
-    LifecycleConfiguration:
-      Rules:
-        - Id: AutoDeletion
-        Prefix: ''
-        Status: 'Enabled'
-        ExpirationInDays: 1
         
   ImageMagick:
     Type: AWS::Serverless::Application
