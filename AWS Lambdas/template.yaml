@@ -47,12 +47,15 @@ Resources:
       Policies:
       - S3CrudPolicy:
           BucketName: !Sub "${AWS::StackName}-*"
+      - DynamoDBWritePolicy: 
+          TableName: !Ref JobTable
       Environment:
         Variables:
           OUTPUT_BUCKET: !Ref ResultsBucket
           EXTENSION: !Sub '.${ConversionFileType}'
           MIME_TYPE: !Ref ConversionMimeType
           THUMB_WIDTH: !Ref ThumbnailWidth
+          DynamoDBTable: !Ref JobTable
       Events:
         FileUpload:
           Type: S3
