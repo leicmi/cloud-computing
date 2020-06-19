@@ -35,7 +35,7 @@ exports.handler = function (eventObject, context) {
 		//else console.log(data);
 	  });
 
-	console.log('converting', inputBucket, key, 'using', inputFile);
+	console.log('converting ', inputBucket, key, 'using', inputFile);
 
 	var result = s3Util.downloadFileFromS3(inputBucket, key, inputFile)
 	.then(() => childProcessPromise.spawn(

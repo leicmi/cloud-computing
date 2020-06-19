@@ -14,12 +14,31 @@ def lambda_handler(event, context):
    # event contains all information about uploaded object
    # Filename of object (with path)
    file_key_name_in = "image.png"
-   file_key_name_out = f"image_{random.random()}.png"
 
    # Copy Source Object
    copy_source_object = {'Bucket': source_bucket_name, 'Key': file_key_name_in}
 
    # S3 copy object operation
+   file_key_name_out = f"image_{random.random()}.png"
+   s3_client.copy_object(CopySource=copy_source_object, Bucket=destination_bucket_name, Key=file_key_name_out)
+   copy_source_object = {'Bucket': source_bucket_name, 'Key': file_key_name_out}
+   file_key_name_out = f"image_{random.random()}.png"
+   s3_client.copy_object(CopySource=copy_source_object, Bucket=destination_bucket_name, Key=file_key_name_out)
+   file_key_name_out = f"image_{random.random()}.png"
+   s3_client.copy_object(CopySource=copy_source_object, Bucket=destination_bucket_name, Key=file_key_name_out)
+   file_key_name_out = f"image_{random.random()}.png"
+   s3_client.copy_object(CopySource=copy_source_object, Bucket=destination_bucket_name, Key=file_key_name_out)
+   file_key_name_out = f"image_{random.random()}.png"
+   s3_client.copy_object(CopySource=copy_source_object, Bucket=destination_bucket_name, Key=file_key_name_out)
+   file_key_name_out = f"image_{random.random()}.png"
+   s3_client.copy_object(CopySource=copy_source_object, Bucket=destination_bucket_name, Key=file_key_name_out)
+   file_key_name_out = f"image_{random.random()}.png"
+   s3_client.copy_object(CopySource=copy_source_object, Bucket=destination_bucket_name, Key=file_key_name_out)
+   file_key_name_out = f"image_{random.random()}.png"
+   s3_client.copy_object(CopySource=copy_source_object, Bucket=destination_bucket_name, Key=file_key_name_out)
+   file_key_name_out = f"image_{random.random()}.png"
+   s3_client.copy_object(CopySource=copy_source_object, Bucket=destination_bucket_name, Key=file_key_name_out)
+   file_key_name_out = f"image_{random.random()}.png"
    s3_client.copy_object(CopySource=copy_source_object, Bucket=destination_bucket_name, Key=file_key_name_out)
 
    return {
