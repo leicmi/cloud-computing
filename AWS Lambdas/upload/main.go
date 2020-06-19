@@ -1,12 +1,12 @@
 package main
 
 import (
-	"os"
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/leicmi/cloud-computing/util"
 
@@ -55,7 +55,7 @@ func HandleRequest(ctx context.Context, req events.APIGatewayProxyRequest) (even
 }
 
 func upload(sess *session.Session, job *util.JobData) error {
-	jobName := fmt.Sprintf("pending/%s", job.Name)
+	jobName := fmt.Sprintf("%s", job.Name)
 
 	uploader := s3manager.NewUploader(sess)
 

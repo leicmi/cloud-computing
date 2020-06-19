@@ -28,7 +28,7 @@ type JobData struct {
 }
 
 func ListJobs(url string) ([]Job, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/default/list", url))
+	resp, err := http.Get(fmt.Sprintf("%s/list", url))
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to perform request")
 	}
@@ -67,7 +67,7 @@ func QueryJobs(url string, status string) ([]Job, error) {
 		return nil, errors.Wrap(err, "unable to marshal query data")
 	}
 
-	resp, err := http.Post(fmt.Sprintf("%s/default/pending", url), "application/json", bytes.NewReader(queryBody))
+	resp, err := http.Post(fmt.Sprintf("%s/pending", url), "application/json", bytes.NewReader(queryBody))
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to execute query")
 	}
